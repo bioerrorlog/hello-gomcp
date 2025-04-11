@@ -67,7 +67,7 @@ func greetingResourceHandler(ctx context.Context, request mcp.ReadResourceReques
 		mcp.TextResourceContents{
 			URI:      request.Params.URI,
 			MIMEType: "text/plain",
-			Text:     fmt.Sprintf("Hello, %s!\n", name),
+			Text:     fmt.Sprintf("Hello, %s!", name),
 		},
 	}, nil
 }
