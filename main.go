@@ -15,7 +15,7 @@ func main() {
 		"1.0.0",
 	)
 
-	// add tool
+	// Add operation tool
 	addTool := mcp.NewTool(
 		"add",
 		mcp.WithDescription("Add two numbers"),
@@ -28,7 +28,7 @@ func main() {
 	)
 	s.AddTool(addTool, addToolHandler)
 
-	// greeting resource
+	// Greeting resource
 	greetingResource := mcp.NewResourceTemplate(
 		"greeting://{name}",
 		"getGreeting",
@@ -36,6 +36,14 @@ func main() {
 		mcp.WithTemplateMIMEType("text/plain"),
 	)
 	s.AddResourceTemplate(greetingResource, greetingResourceHandler)
+
+	// Japanese translation prompt
+	translationPrompt := mcp.NewPrompt(
+		"translationJa",
+		mcp.WithPromptDescription("Translating to Japanese"),
+		mcp.WithArgument("txt", mcp.RequiredArgument()),
+	)
+	s.AddPrompt(translationPrompt, translationPromptHandler)
 
 	if err := server.ServeStdio(s); err != nil {
 		fmt.Printf("Server error: %v\n", err)
@@ -74,4 +82,17 @@ func extractNameFromURI(uri string) (string, error) {
 		return "", fmt.Errorf("name is empty in URI: %s", uri)
 	}
 	return name, nil
+}
+
+func translationPromptHandler(ctx context.Context, request mcp.GetPromptRequest) (*mcp.GetPromptResult, error) {
+	txt := request.Params.Arguments["txt"]
+	return mcp.NewGetPromptResult(
+		"Translating to Japanese",
+		[]mcp.PromptMessage{
+			mcp.NewPromptMessage(
+				mcp.RoleAssistant,
+				mcp.NewTextContent(fmt.Sprintf("Please translate this sentence into Japanese:\n\n%s", txt)),
+			),
+		},
+	), nil
 }
